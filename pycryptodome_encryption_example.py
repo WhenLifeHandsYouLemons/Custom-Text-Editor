@@ -28,12 +28,13 @@ def main():
         task = input("(e)ncrypt, (d)ecrypt or (q)uit?")
         if task == "e": # Encrypt
             message = input("Your secret message: ")
-            key = input("Your encryption key: ")
+            key = get_random_bytes(32)
             ciphertext, tag, nonce = encrypt(message, key)
             print("You can safely send these...")
-            print("Cipher text: "+ciphertext.hex())
-            print("Tag: "+tag.hex())
-            print("Nonce: "+nonce.hex())
+            print("Cipher text: " + ciphertext.hex())
+            print("Tag: " + tag.hex())
+            print("Nonce: " + nonce.hex())
+            print("Key: " + key.hex())
         elif task == "d": # Decrypt
             ciphertext = input("Encrypted text (hex): ")
             tag = input("Your ciphertext tag (hex): ")

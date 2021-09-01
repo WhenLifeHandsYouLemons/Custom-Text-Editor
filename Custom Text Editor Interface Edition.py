@@ -15,11 +15,10 @@ from tkinter import messagebox
 from tkinter import colorchooser
 import webbrowser
 import time
-# pycryptodome import
+# pycryptodome library
 from Crypto.Cipher import AES
-from Crypto.Random import get_random_bytes
-# This is not useful anymore
-from cryptography.fernet import Fernet
+import secrets
+import string
 
 # text.config(font="Helvetica")
 
@@ -46,23 +45,25 @@ if first_time_opening_app == "True":
     # time.sleep(10)
     # print("\nAlmost done!")
     # Generates a key to encodes the file
-    key = Fernet.generate_key()
-    key = key.decode("utf-8")
+    key = ''.join(secrets.choice(string.digits + string.ascii_letters) for _ in range(32))
+    key = key.encode("utf-8")
+    if debug_mode == "On":
+        print("Generated 32-byte array key:", key)
     if debug_mode == "On":
         print(key)
         print(settings)
     settings.pop(1)
+    settings.insert(1, f"{key}")
     settings.pop(0)
-    settings.insert(0, f"{key}")
     settings.insert(0, "False")
     time.sleep(5)
 else:
     print("\nWelcome back.")
-    key = encryption_key
+    key = bytearray.fromhex(encryption_key)
     time.sleep(2)
 
 # This initialises the key to encode and decode
-fernet = Fernet(key)
+# fernet = Fernet(key) ####################################
 
 save_location = ""
 font_size = 11
@@ -156,7 +157,7 @@ def save_file(Event=None):
     if save_location != "":
         text_to_save = textbox.get("1.0", END)
         file1 = open(save_location, "w+")
-        encrypted_text_to_save = fernet.encrypt(text_to_save.encode())
+        # encrypted_text_to_save = fernet.encrypt(text_to_save.encode()) ####################
         encrypted_text_to_save = str(encrypted_text_to_save)
         encrypted_text_to_save = encrypted_text_to_save.split("'")
         encrypted_text_to_save = encrypted_text_to_save[1]
@@ -204,7 +205,7 @@ def open_file(Event=None):
             if file_extension == "cteie":
                 for line in infile:
                     file_content = line.encode('utf-8')
-                    file_content = fernet.decrypt(file_content).decode()
+                    # file_content = fernet.decrypt(file_content).decode() #########################
                 infile.close()
                 infile = file_content
                 if debug_mode == "On":
