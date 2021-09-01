@@ -14,8 +14,12 @@ from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import colorchooser
 import webbrowser
-from cryptography.fernet import Fernet
 import time
+# pycryptodome import
+from Crypto.Cipher import AES
+from Crypto.Random import get_random_bytes
+# This is not useful anymore
+from cryptography.fernet import Fernet
 
 # text.config(font="Helvetica")
 
