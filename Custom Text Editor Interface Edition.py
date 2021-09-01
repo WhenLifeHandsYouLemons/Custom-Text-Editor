@@ -19,6 +19,9 @@ import time
 
 # text.config(font="Helvetica")
 
+# Used for EXE making
+# ADD CODE HERE
+
 # The first line is first_time_opening_app, second is encryption_key, third is debug_mode
 settings = []
 with open("C:/Users/2005s/Documents/Visual Studio Code/Python/Tkinter/Custom-Text-Editor/Settings.txt", "r") as f:
