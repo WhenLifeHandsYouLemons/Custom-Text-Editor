@@ -13,18 +13,24 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import colorchooser
-import webbrowser
+# import webbrowser
 from cryptography.fernet import Fernet
 import time
+import os
 
 # text.config(font="Helvetica")
 
 # Used for EXE making
-# ADD CODE HERE
+def get_true_filename(filename):
+    try:
+        base = sys._MEIPASS
+    except Exception:
+        base = os.path.abspath(".")
+    return os.path.join(base, filename)
 
 # The first line is first_time_opening_app, second is encryption_key, third is debug_mode
 settings = []
-with open("C:/Users/2005s/Documents/Visual Studio Code/Python/Tkinter/Custom-Text-Editor/Settings.txt", "r") as f:
+with open(get_true_filename("Settings.txt"), "r") as f:
     content = f.read()
     lines = content.splitlines()
     for line in lines:
@@ -131,7 +137,7 @@ get_file_name()
 
 def quit_app(Event=None):
     save = "\n".join(settings)
-    with open("C:/Users/2005s/Documents/Visual Studio Code/Python/Tkinter/Custom-Text-Editor/Settings.txt", "w") as f:
+    with open(get_true_filename("Settings.txt"), "w") as f:
         f.write(save)
     if len(textbox.get("1.0", END)) != 1:
         confirm_exit_box = messagebox.askyesno("Quit Program","Are you sure you want to quit? Any unsaved changes will be lost forever.\n\nClicking 'No' will automatically save the file before exiting the editor.\nClicking 'Yes' will close the editor without saving.")
@@ -224,7 +230,7 @@ def open_file(Event=None):
 
 def new_file(Event=None):
     if len(textbox.get("1.0", END)) != 1:
-        confirm_exit_box = messagebox.askyesno("New File","Any unsaved changes will be lost forever.\nClicking 'No' will automatically save the file before exiting the editor.")
+        messagebox.askyesno("New File","Any unsaved changes will be lost forever.\nClicking 'No' will automatically save the file before exiting the editor.")
     global save_location
     save_location = ""
     textbox.config(state=NORMAL)
@@ -326,7 +332,7 @@ def change_text_colour(Event=None):
     used_tags.append(i)
 
 def documentation(Event=None):
-    webbrowser.open_new("https://github.com/WhenLifeHandsYouLemons/Custom-Text-Editor/wiki/Documentation")
+    # webbrowser.open_new("https://github.com/WhenLifeHandsYouLemons/Custom-Text-Editor/wiki/Documentation")
 
 def about_menu(Event=None):
     messagebox.showinfo("About Custom Text Editor Interface Edition","A custom text editor made for a fun side project. Comes with a terminal version and an encryptor which adds an extra layer of security by asking for a password before showing the text editor.\n\nCreated by Sooraj.S")
