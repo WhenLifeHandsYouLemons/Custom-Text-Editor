@@ -13,7 +13,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 from tkinter import colorchooser
-# import webbrowser
+import webbrowser
 from cryptography.fernet import Fernet
 import time
 import os
@@ -332,7 +332,7 @@ def change_text_colour(Event=None):
     used_tags.append(i)
 
 def documentation(Event=None):
-    # webbrowser.open_new("https://github.com/WhenLifeHandsYouLemons/Custom-Text-Editor/wiki/Documentation")
+    webbrowser.open_new("https://github.com/WhenLifeHandsYouLemons/Custom-Text-Editor/wiki/Documentation")
 
 def about_menu(Event=None):
     messagebox.showinfo("About Custom Text Editor Interface Edition","A custom text editor made for a fun side project. Comes with a terminal version and an encryptor which adds an extra layer of security by asking for a password before showing the text editor.\n\nCreated by Sooraj.S")
