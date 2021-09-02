@@ -40,8 +40,9 @@ first_time_opening_app = settings[0]
 encryption_key = settings[1]
 debug_mode = settings[2]
 
+# key = "This does not save yet"
 if first_time_opening_app == "True":
-    print("\nFirst time, eh?")
+    # print("\nFirst time, eh?")
     # time.sleep(2)
     # print("\nDon't worry, I'll set up a few things before you can get started.")
     # time.sleep(4)
@@ -60,11 +61,11 @@ if first_time_opening_app == "True":
     settings.pop(0)
     settings.insert(0, f"{key}")
     settings.insert(0, "False")
-    time.sleep(5)
+    # time.sleep(5)
 else:
-    print("\nWelcome back.")
+    # print("\nWelcome back.")
     key = encryption_key
-    time.sleep(2)
+    # time.sleep(2)
 
 # This initialises the key to encode and decode
 fernet = Fernet(key)
@@ -78,13 +79,20 @@ used_tags = []
 formatting = []
 format_start_string = "H6ETuTu9od"
 
-supported_file_types = [("Custom Text Editor Interface Edition Files", "*.cteie"),
-                        ("Text Document", "*.txt"),
+supported_file_types = [("Text Document", "*.txt"),
                         ("Python Files", "*.py"),
                         ("HTML Files", "*.html"),
                         ("Cascading Style Sheets Files", "*.css"),
                         ("MD Files", "*.md"),
                         ("All Files", "*.*")]
+
+# supported_file_types = [("Custom Text Editor Interface Edition Files", "*.cteie"),
+#                         ("Text Document", "*.txt"),
+#                         ("Python Files", "*.py"),
+#                         ("HTML Files", "*.html"),
+#                         ("Cascading Style Sheets Files", "*.css"),
+#                         ("MD Files", "*.md"),
+#                         ("All Files", "*.*")]
 
 root = Tk("Text Editor")
 if debug_mode == "On":
@@ -161,13 +169,21 @@ def save_file(Event=None):
     if save_location != "":
         text_to_save = textbox.get("1.0", END)
         file1 = open(save_location, "w+")
-        encrypted_text_to_save = fernet.encrypt(text_to_save.encode())
-        encrypted_text_to_save = str(encrypted_text_to_save)
-        encrypted_text_to_save = encrypted_text_to_save.split("'")
-        encrypted_text_to_save = encrypted_text_to_save[1]
+        separated_location = save_location.split("/")
+        separated_file_name = separated_location[-1].split(".")
+        file_extension = separated_file_name[1]
         if debug_mode == "On":
-            print(encrypted_text_to_save)
-        file1.write(encrypted_text_to_save)
+            print(file_extension)
+        if file_extension == "cteie":
+            encrypted_text_to_save = fernet.encrypt(text_to_save.encode())
+            encrypted_text_to_save = str(encrypted_text_to_save)
+            encrypted_text_to_save = encrypted_text_to_save.split("'")
+            encrypted_text_to_save = encrypted_text_to_save[1]
+            if debug_mode == "On":
+                print(encrypted_text_to_save)
+            file1.write(encrypted_text_to_save)
+        else:
+            file1.write(text_to_save)
         file1.close()
         print("File saved.")
     else:
@@ -181,13 +197,21 @@ def save_as_file(Event=None):
     save_location = filedialog.asksaveasfilename(filetypes=files, defaultextension=files)
     if save_location != "":
         file1 = open(save_location, "w+")
-        encrypted_text_to_save_as = fernet.encrypt(text_to_save_as.encode())
-        encrypted_text_to_save_as = str(encrypted_text_to_save_as)
-        encrypted_text_to_save_as = encrypted_text_to_save_as.split("'")
-        encrypted_text_to_save_as = encrypted_text_to_save_as[1]
+        separated_location = save_location.split("/")
+        separated_file_name = separated_location[-1].split(".")
+        file_extension = separated_file_name[1]
         if debug_mode == "On":
-            print(encrypted_text_to_save_as)
-        file1.write(encrypted_text_to_save_as)
+            print(file_extension)
+        if file_extension == "cteie":
+            encrypted_text_to_save_as = fernet.encrypt(text_to_save_as.encode())
+            encrypted_text_to_save_as = str(encrypted_text_to_save_as)
+            encrypted_text_to_save_as = encrypted_text_to_save_as.split("'")
+            encrypted_text_to_save_as = encrypted_text_to_save_as[1]
+            if debug_mode == "On":
+                print(encrypted_text_to_save_as)
+            file1.write(encrypted_text_to_save_as)
+        else:
+            file1.write(text_to_save_as)
         file1.close()
         print("File saved.")
 
@@ -197,7 +221,6 @@ def open_file(Event=None):
         files = supported_file_types
         save_location = filedialog.askopenfilename(title="Select file",filetypes=files)
         if save_location != "":
-            infile = ""
             infile = open(save_location,"r")
             if debug_mode == "On":
                 print(infile)
@@ -211,7 +234,6 @@ def open_file(Event=None):
                     file_content = line.encode('utf-8')
                     file_content = fernet.decrypt(file_content).decode()
                 infile.close()
-                infile = file_content
                 if debug_mode == "On":
                     print(infile)
             textbox.config(state=NORMAL)
@@ -246,14 +268,29 @@ def view_file(Event=None):
             infile = open(save_location,"r")
             textbox.config(state=NORMAL)
             textbox.delete("1.0",END)
-            for line in infile:
-                textbox.insert(END,line)
-            infile.close()
+            separated_location = save_location.split("/")
+            separated_file_name = separated_location[-1].split(".")
+            file_extension = separated_file_name[1]
+            if debug_mode == "On":
+                print(file_extension)
+            if file_extension == "cteie":
+                for line in infile:
+                    file_content = line.encode('utf-8')
+                    file_content = fernet.decrypt(file_content).decode()
+                infile.close()
+                if debug_mode == "On":
+                    print(infile)
+                for line in file_content:
+                    textbox.insert(END,line)
+            else:
+                for line in infile:
+                    textbox.insert(END,line)
+                infile.close()
             textbox.config(state=DISABLED)
         get_file_name()
         print("Opened file for viewing.")
-    except Exception as e:
-        messagebox.showerror("Exception",e)
+    except Exception:
+        messagebox.showerror("Error Opening File", f"Access denied.\n\nHINT\nUse the program that you wrote this file on to open it correctly.")
 
 def edit_mode(Event=None):
     textbox.config(state=NORMAL)
@@ -283,9 +320,6 @@ def increase_font(Event=None):
         textbox.tag_config(current_tag, font=(font_type, font_size))
         used_tags.append(i)
 
-    # textbox.tag_add("example_tag_name", "1.0", END)
-    # textbox.tag_config("example_tag_name", background="lime green", font=("Helvetica", 50, "italic"))
-
 def decrease_font(Event=None):
     global font_size
     if font_size == min_font_size:
@@ -307,7 +341,6 @@ def decrease_font(Event=None):
         textbox.tag_add(current_tag, start_selection, end_selection)
         textbox.tag_config(current_tag, font=(font_type, font_size))
         used_tags.append(i)
-        # textbox.config(font=(font_type, font_size))
 
 def specific_size_font(Event=None):
     print()
@@ -359,7 +392,6 @@ def track_changes(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # undostate1.insert(END, get_current_text)
 
     get_current_text = textbox.get("1.0", END)
     undostate0.delete("1.0", END)
@@ -373,7 +405,6 @@ def track_changes(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # undostate0.insert(END, get_current_text)
 
     redostate0.delete("1.0", END)
     redostate1.delete("1.0", END)
@@ -410,7 +441,6 @@ def undo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # redostate1.insert(END, get_current_text)
 
     get_current_text = textbox.get("1.0", END)
     redostate0.delete("1.0", END)
@@ -424,7 +454,6 @@ def undo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # redostate0.insert(END, get_current_text)
 
     get_current_text = undostate0.get("1.0", END)
     textbox.delete("1.0", END)
@@ -437,7 +466,6 @@ def undo_event(Event=None):
         current_line = current_line + 1
         if current_line == total_lines - 1:
             break
-    # textbox.insert(END, get_current_text)
 
     get_current_text = undostate1.get("1.0", END)
     undostate0.delete("1.0", END)
@@ -451,7 +479,6 @@ def undo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # undostate0.insert(END, get_current_text)
 
 def redo_event(Event=None):
     get_current_text = undostate0.get("1.0", END)
@@ -466,7 +493,6 @@ def redo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # undostate1.insert(END, get_current_text)
 
     get_current_text = textbox.get("1.0", END)
     undostate0.delete("1.0", END)
@@ -480,7 +506,6 @@ def redo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # undostate0.insert(END, get_current_text)
 
     get_current_text = redostate0.get("1.0", END)
     textbox.delete("1.0", END)
@@ -494,7 +519,6 @@ def redo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # textbox.insert(END, get_current_text)
 
     get_current_text = redostate1.get("1.0", END)
     redostate0.delete("1.0", END)
@@ -508,7 +532,6 @@ def redo_event(Event=None):
         if current_line == total_lines - 1:
             print("Skipped a line!")
             break
-    # redostate0.insert(END, get_current_text)
 
 def select_all(Event=None):
     textbox.event_generate("<<SelectAll>>")
